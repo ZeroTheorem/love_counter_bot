@@ -52,8 +52,10 @@ func main() {
   		  count INTEGER)`)
 	var counts []int
 	db.Select(&counts, "SELECT count FROM love_counter;")
-	alexCount = counts[0]
-	alenaCount = counts[1]
+	if len(counts) > 0 {
+		alexCount = counts[0]
+		alenaCount = counts[1]
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,8 +65,8 @@ func main() {
 
 	b.Handle(tele.OnText, func(c tele.Context) error {
 		msg := c.Message().Text
-		if strings.Contains(msg, "люблю") && strings.Contains(msg, "тебя") {
-			if c.Chat().Username == "qb1110" {
+		if strings.Contains(strings.ToLower(msg), "люблю") && strings.Contains(strings.ToLower(msg), "тебя") {
+			if c.Sender().Username == "qb1110" {
 				_, err := db.Exec("UPDATE love_counter SET count = count + 1 WHERE name = 'Alex';")
 				if err != nil {
 					log.Fatal(err)
